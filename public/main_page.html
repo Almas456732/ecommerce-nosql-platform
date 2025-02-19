@@ -19,7 +19,7 @@
                     <ul class="navbar-nav ms-auto" id="nav-menu">
                         <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="/">Catalog</a></li>
-                        <li class="nav-item"><a class="nav-link" id="login-btn" href="/loginPage">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" id="login-logout-link" href="/loginPage">Login</a></li>
                         <li class="nav-item"><a class="nav-link" id="profile-btn" href="/signupPage">Sign-up</a></li>
                     </ul>
                 </div>
@@ -120,7 +120,21 @@
           </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    <script src="/static/main_page_FAQ.js"></script>
-    <script src="/static/main_helpdesk.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        const loginLogoutLink = document.getElementById('login-logout-link');
+
+        if (token) {
+            loginLogoutLink.textContent = 'Logout';
+            loginLogoutLink.href = '#';
+            loginLogoutLink.addEventListener('click', () => {
+                localStorage.removeItem('token');
+                window.location.href = '/';
+            });
+        } else {
+            loginLogoutLink.textContent = 'Login';
+            loginLogoutLink.href = '/loginPage';
+        }
+    </script>
 </body>
 </html>

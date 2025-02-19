@@ -100,16 +100,16 @@ footer {
 .carousel-item img {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    height: 300px; /* Фиксированная высота */
-    width: 100%; /* Ширина на 100% контейнера */
-    object-fit: cover; /* Сохраняет пропорции и заполняет контейнер */
+    height: 300px; 
+    width: 100%; 
+    object-fit: cover; 
 }
 
 .FAQ {
-    text-align: center; /* Центрируем текст */
+    text-align: center;
 }
 
 .FAQ dl {
-    display: inline-block; /* Делаем блок с вопросами и ответами по центру */
-    text-align: left; /* Текст внутри блока выравниваем по левому краю */
+    display: inline-block;
+    text-align: left;
 }

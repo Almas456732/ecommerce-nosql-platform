@@ -13,20 +13,17 @@
             <div class="container signup-container">
                 <h2>Sign Up</h2>
                 <form id="signupForm">
-                    <label for="username">Username</label>
+                    <label for="name">Name</label>
                     <input type="text" id="username" name="username" required>
-        
+                  
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" required>
-        
+                  
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" required>
-        
-                    <label for="confirm_password">Confirm Password</label>
-                    <input type="password" id="confirm_password" name="confirm_password" required>
-        
-                    <button type="submit">Sign Up</button>
-                </form>
+                  
+                    <button onclick="register()">Sign Up</button>
+                  </form>
                 <div class="home-link">
                     <p><a href="/">Go to Home</a></p>
                 </div>
@@ -43,6 +40,27 @@
             <p>husainovalmas@gmail.com</p>
           </div>
       </footer>
-      <script src="/static/signup_page_func.js"></script>
+      <script>
+        async function register() {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert(data.message || 'Registration successful');
+                window.location.href = '/loginPage';
+            }
+            else{
+                alert(data.message || 'Sign up failed');
+            }
+        }
+      </script>
     </body>
 </html>
