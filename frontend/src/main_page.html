@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="main_page_style.css">
+    <title>Tech Store</title>
+</head>
+<body>
+    <header>
+        <nav id="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Tech Store</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button> 
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto" id="nav-menu">
+                        <li class="nav-item"><a class="nav-link" href="main_page.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="">Catalog</a></li>
+                        <li class="nav-item"><a class="nav-link" id="login-btn" href="login_page.html">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" id="profile-btn" href="signup_page.html">Sign-up</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <section class="introduction_main_container">
+        <h1 id="header_text">Welcome to Tech Store</h1>
+        <hr id="header_line">
+        <div class="introduction_container">
+            <div class="introduction_text-content">
+                <h2>Top Tech Products at the Best Prices</h2>
+                <p>Explore our latest collection of smartphones, laptops, and accessories. Get the best deals today!</p>
+                <a href="" class="button">Shop Now</a>
+            </div>
+            <div class="introduction_image-content">
+                <img class="second_image" src="main_page_gadget.jpg" alt="Latest gadgets">
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <blockquote>"Technology is best when it brings people together." — Matt Mullenweg</blockquote>
+        <div class="container">
+            <div class="row Why">
+                <section class="col-md-6">
+                    <h2>Why Choose Us?</h2>
+                    <ul>
+                        <li>Latest and high-quality tech products</li>
+                        <li>Best prices and exclusive discounts</li>
+                        <li>Fast and reliable delivery</li>
+                        <li>Excellent customer support</li>
+                    </ul>
+                </section>
+                <div class="col-md-6">
+                    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img src="carousel1.png" class="d-block w-100" alt="Slide 1">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="carousel2.png" class="d-block w-100" alt="Slide 2">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="carousel3.jpg" class="d-block w-100" alt="Slide 3">
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row GST">
+                <section class="col-md-6">
+                    <h2>Start Shopping Today</h2>
+                    <p>Browse our latest gadgets and order your favorites now!</p>
+                </section>
+                <div class="col-md-6 d-flex align-items-center">
+                    <a href="" class="button">View Catalog</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row FAQ">
+                <section class="col-md-12 text-center">
+                    <h2>Frequently Asked Questions (FAQs)</h2>
+                    <dl>
+                        <dt>What products do you sell?</dt>
+                        <dd>We offer a wide range of gadgets, including smartphones, laptops, and accessories.</dd>
+                        <dt>Do you offer international shipping?</dt>
+                        <dd>Yes, we deliver worldwide with fast and secure shipping.</dd>
+                        <dt>What payment methods do you accept?</dt>
+                        <dd>We accept credit cards, PayPal, and other secure payment options.</dd>
+                        <dt>How can I track my order?</dt>
+                        <dd>Once your order is shipped, you'll receive a tracking number via email.</dd>
+                    </dl>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-white text-center py-3 mt-4">
+        <div class="container">
+            <p>Contact us:</p>
+            <p>alan.selivanov.mail@gmail.com</p>
+            <p>husainovalmas@gmail.com</p>
+          </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="/static/main_page_FAQ.js"></script>
+    <script src="/static/main_helpdesk.js"></script>
+</body>
+</html>
