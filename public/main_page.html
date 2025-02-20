@@ -332,6 +332,7 @@
                 <div class="d-flex d-none" id="userInfo">
                     <span class="navbar-text me-3" id="userEmail"></span>
                     <button class="btn btn-outline-light me-2" onclick="viewOrders()">Orders</button>
+                    <button class="btn btn-outline-light d-none" id="adminButton" onclick="goToAdminPanel()">Admin</button>
                     <button class="btn btn-outline-light" onclick="logout()">Logout</button>
                 </div>
             </div>
@@ -443,18 +444,29 @@
                 document.getElementById('authButtons').classList.add('d-none');
                 document.getElementById('userInfo').classList.remove('d-none');
                 document.getElementById('userEmail').textContent = user.email;
+    
+                // Показываем кнопку "Admin" для пользователей с ролью "admin"
+                if (user.role === 'admin') {
+                    document.getElementById('adminButton').classList.remove('d-none');
+                }
             }
         };
-
+    
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             window.location.reload();
         }
+    
         function viewOrders() {
             window.location.href = '/ordersPage';
         }
-
+    
+        // Функция для перехода на админ-панель
+        function goToAdminPanel() {
+            window.location.href = '/admin';
+        }
+    
         // Добавим функцию для обработки клика по кнопке Shop Now
         function handleShopNow() {
             const token = localStorage.getItem('token');
