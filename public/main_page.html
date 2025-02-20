@@ -40,7 +40,7 @@
             <div class="introduction_text-content">
                 <h2>Top Tech Products at the Best Prices</h2>
                 <p>Explore our latest collection of smartphones, laptops, and accessories. Get the best deals today!</p>
-                <a href="/" class="button">Shop Now</a>
+                <button onclick="handleShopNow()" class="button">Shop Now</button>
             </div>
             <div class="introduction_image-content">
                 <img class="second_image" src="main_page_gadget.jpg" alt="Latest gadgets">
@@ -67,12 +67,12 @@
                             <div class="carousel-item active">
                                 <img src="carousel1.png" class="d-block w-100" alt="Slide 1">
                             </div>
-                            <div class="carousel-item">
-                                <img src="carousel2.png" class="d-block w-100" alt="Slide 2">
+                            <!-- <div class="carousel-item">
+                                <img src="carousel2.jpg" class="d-block w-100" alt="Slide 2">
                             </div>
                             <div class="carousel-item">
                                 <img src="carousel3.jpg" class="d-block w-100" alt="Slide 3">
-                            </div>
+                            </div> -->
                         </div>
                         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -94,7 +94,7 @@
                     <p>Browse our latest gadgets and order your favorites now!</p>
                 </section>
                 <div class="col-md-6 d-flex align-items-center">
-                    <a href="/" class="button">View Catalog</a>
+                    <button onclick="handleShopNow()" class="button">View Catalog</button>
                 </div>
             </div>
         </div>
@@ -146,6 +146,16 @@
         }
         function viewOrders() {
             window.location.href = '/ordersPage';
+        }
+
+        // Добавим функцию для обработки клика по кнопке Shop Now
+        function handleShopNow() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                window.location.href = '/catalog';
+            } else {
+                window.location.href = '/loginPage';
+            }
         }
     </script>
 </body>
