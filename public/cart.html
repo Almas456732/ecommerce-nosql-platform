@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">E-Commerce</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/catalog">Catalog</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/cart">Cart</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>Your Cart</h2>
+        <div class="row" id="cartItems">
+            <!-- Cart items will be inserted here -->
+        </div>
+        <div class="mt-4">
+            <h4>Total: $<span id="totalAmount">0.00</span></h4>
+            <button class="btn btn-success" onclick="buyItems()">Buy</button>
+            <button class="btn btn-danger" onclick="clearCart()">Clear Cart</button>
+        </div>
+    </div>
+
+    <script>
+        async function loadCart() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartItemsDiv = document.getElementById('cartItems');
+            cartItemsDiv.innerHTML = '';
+            let totalAmount = 0;
+
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
+                document.getElementById('totalAmount').textContent = '0.00';
+                return;
+            }
+
+            for (const productId of cart) {
+                try {
+                    const response = await fetch(`/api/products/${productId}`);
+                    if (!response.ok) throw new Error('Failed to load product');
+                    
+                    const product = await response.json();
+                    totalAmount += product.price;
+                    cartItemsDiv.innerHTML += `
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <img src="${product.imageURLs[0] || 'https://via.placeholder.com/200'}" 
+                                     class="card-img-top" 
+                                     alt="${product.name}">
+                                <div class="card-body">
+                                    <h5 class="card-title">${product.name}</h5>
+                                    <p class="card-text">$${product.price}</p>
+                                    <button class="btn btn-danger" onclick="removeFromCart('${product._id}')">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+
+            document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+        }
+
+        function removeFromCart(productId) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart = cart.filter(id => id !== productId);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            loadCart();
+        }
+
+        function clearCart() {
+            localStorage.removeItem('cart');
+            loadCart();
+        }
+
+        async function buyItems() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            console.log('Текущая корзина:', cart);
+            if (cart.length === 0) {
+                alert('Your cart is empty.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/products/purchase', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productIds: cart })
+                });
+                
+                console.log('Ответ от сервера:', response);
+                const result = await response.json();
+                console.log('Результат:', result);
+                if (response.ok) {
+                    alert('Purchase successful!');
+                    clearCart();
+                } else {
+                    alert(result.message || 'Purchase failed.');
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Purchase failed.');
+            }
+        }
+
+        window.onload = loadCart;
+    </script>
+</body>
+</html>

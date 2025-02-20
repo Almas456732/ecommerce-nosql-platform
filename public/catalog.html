@@ -41,6 +41,7 @@
                 </ul>
                 <div class="d-flex">
                     <span class="navbar-text me-3" id="userEmail"></span>
+                    <button class="btn btn-outline-light me-2" onclick="window.location.href='/cart'">View Cart</button>
                     <button class="btn btn-outline-light" onclick="logout()">Logout</button>
                 </div>
             </div>
@@ -133,8 +134,8 @@
                 <div class="col-md-4 mb-4">
                     <div class="card product-card">
                         <img src="${product.imageURLs[0] || 'https://via.placeholder.com/200'}" 
-                             class="card-img-top product-image" 
-                             alt="${product.name}">
+                            class="card-img-top product-image" 
+                            alt="${product.name}">
                         <div class="card-body">
                             <h5 class="card-title">${product.name}</h5>
                             <p class="card-text">${product.description.substring(0, 100)}...</p>
@@ -142,10 +143,22 @@
                                 <span class="h5 mb-0">$${product.price}</span>
                                 <span class="badge bg-secondary">${product.category}</span>
                             </div>
+                            <button class="btn btn-success mt-2" onclick="addToCart('${product._id}')">Add to cart</button>
                         </div>
                     </div>
                 </div>
             `).join('');
+        }
+
+        function addToCart(productId) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (!cart.includes(productId)) {
+                cart.push(productId);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                alert('Product added to cart');
+            } else {
+                alert('Product is already in the cart');
+            }
         }
 
         function updateCategories(categories) {

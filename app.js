@@ -42,6 +42,9 @@ app.get('/catalog', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'catalog.html'));
 });
 
+app.get('/cart', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'cart.html'));
+});
 // Start server
 app.listen(PORT, () => {
   connectDB();
