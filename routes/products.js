@@ -68,28 +68,26 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/purchase', async (req, res) => {
-  const productIds = req.body.productIds;
-  console.log('Полученные productIds:', productIds);
+  const cart = req.body.cart;
   try {
+    const productIds = Object.keys(cart);
     const products = await Product.find({ _id: { $in: productIds } });
-    console.log('Найденные продукты:', products);
 
     for (const product of products) {
-      if (product.stock <= 0) {
-        console.log(`Продукт ${product.name} отсутствует на складе.`);
+      const quantity = cart[product._id];
+      if (product.stock < quantity) {
         return res.status(400).json({ message: `Product ${product.name} is out of stock.` });
       }
     }
 
     for (const product of products) {
-      product.stock -= 1;
+      const quantity = cart[product._id];
+      product.stock -= quantity;
       await product.save();
-      console.log(`Обновленный запас для продукта ${product.name}: ${product.stock}`);
     }
 
     res.json({ message: 'Purchase successful!' });
   } catch (err) {
-    console.error('Ошибка при покупке:', err);
     res.status(500).json({ message: err.message });
   }
 });

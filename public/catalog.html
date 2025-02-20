@@ -151,14 +151,14 @@
         }
 
         function addToCart(productId) {
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            if (!cart.includes(productId)) {
-                cart.push(productId);
-                localStorage.setItem('cart', JSON.stringify(cart));
-                alert('Product added to cart');
+            let cart = JSON.parse(localStorage.getItem('cart')) || {};
+            if (cart[productId]) {
+                cart[productId] += 1;
             } else {
-                alert('Product is already in the cart');
+                cart[productId] = 1;
             }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert('Product added to cart');
         }
 
         function updateCategories(categories) {

@@ -37,33 +37,34 @@
 
     <script>
         async function loadCart() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cart = JSON.parse(localStorage.getItem('cart')) || {};
             const cartItemsDiv = document.getElementById('cartItems');
             cartItemsDiv.innerHTML = '';
             let totalAmount = 0;
 
-            if (cart.length === 0) {
+            if (Object.keys(cart).length === 0) {
                 cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
                 document.getElementById('totalAmount').textContent = '0.00';
                 return;
             }
 
-            for (const productId of cart) {
+            for (const productId in cart) {
                 try {
                     const response = await fetch(`/api/products/${productId}`);
                     if (!response.ok) throw new Error('Failed to load product');
                     
                     const product = await response.json();
-                    totalAmount += product.price;
+                    const quantity = cart[productId];
+                    totalAmount += product.price * quantity;
                     cartItemsDiv.innerHTML += `
                         <div class="col-md-4 mb-4">
                             <div class="card">
                                 <img src="${product.imageURLs[0] || 'https://via.placeholder.com/200'}" 
-                                     class="card-img-top" 
-                                     alt="${product.name}">
+                                    class="card-img-top" 
+                                    alt="${product.name}">
                                 <div class="card-body">
                                     <h5 class="card-title">${product.name}</h5>
-                                    <p class="card-text">$${product.price}</p>
+                                    <p class="card-text">$${product.price} x ${quantity}</p>
                                     <button class="btn btn-danger" onclick="removeFromCart('${product._id}')">Remove</button>
                                 </div>
                             </div>
@@ -78,8 +79,13 @@
         }
 
         function removeFromCart(productId) {
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            cart = cart.filter(id => id !== productId);
+            let cart = JSON.parse(localStorage.getItem('cart')) || {};
+            if (cart[productId]) {
+                cart[productId] -= 1;
+                if (cart[productId] <= 0) {
+                    delete cart[productId];
+                }
+            }
             localStorage.setItem('cart', JSON.stringify(cart));
             loadCart();
         }
@@ -90,9 +96,9 @@
         }
 
         async function buyItems() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cart = JSON.parse(localStorage.getItem('cart')) || {};
             console.log('Текущая корзина:', cart);
-            if (cart.length === 0) {
+            if (Object.keys(cart).length === 0) {
                 alert('Your cart is empty.');
                 return;
             }
@@ -103,7 +109,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ productIds: cart })
+                    body: JSON.stringify({ cart })
                 });
                 
                 console.log('Ответ от сервера:', response);
