@@ -6,6 +6,311 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="main_page_style.css">
     <title>Tech Store</title>
+    <style>
+        /* Общие стили */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Стили для навигационной панели */
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Стили для главного заголовка */
+        .introduction_main_container {
+            background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
+            padding: 4rem 0;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        #header_text {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        #header_line {
+            width: 100px;
+            height: 4px;
+            background: white;
+            margin: 1rem auto;
+            border: none;
+        }
+
+        /* Стили для контейнера с введением */
+        .introduction_container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        .introduction_text-content {
+            flex: 1;
+        }
+
+        .introduction_text-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .introduction_text-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .introduction_image-content {
+            flex: 1;
+        }
+
+        .second_image {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .second_image:hover {
+            transform: translateY(-10px);
+        }
+
+        /* Стили для кнопок */
+        .button {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: white;
+            color: #0d6efd;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Стили для цитаты */
+        blockquote {
+            font-size: 1.5rem;
+            font-style: italic;
+            text-align: center;
+            color: #333;
+            margin: 3rem auto;
+            max-width: 800px;
+            padding: 2rem;
+            border-left: 5px solid #0d6efd;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        /* Стили для секции Why Choose Us */
+        .Why {
+            background: white;
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+        }
+
+        .Why h2 {
+            color: #333;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .Why ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .Why ul li {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+            position: relative;
+            font-size: 1.1rem;
+        }
+
+        .Why ul li:before {
+            content: '✓';
+            color: #0d6efd;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Стили для карусели */
+        .carousel {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Стили для секции Start Shopping Today */
+        .GST {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            padding: 2rem;
+            height: 300px;
+        }
+
+        .GST h2 {
+            color: #2c3e50;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .GST p {
+            font-size: 1.1rem;
+            color: #505c6c;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .GST .button {
+            background: #0d6efd;
+            color: white;
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+        }
+
+        .GST .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+            background: #0b5ed7;
+        }
+
+        /* Стили для FAQ секции */
+        .FAQ {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 2rem;
+        }
+
+        .FAQ h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .FAQ dt {
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .FAQ dd {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            padding-left: 1rem;
+        }
+
+        /* Стили для футера */
+        footer {
+            background: #343a40;
+            color: white;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        footer p {
+            margin: 0.5rem 0;
+            opacity: 0.8;
+        }
+
+        /* Адаптивный дизайн */
+        @media (max-width: 768px) {
+            .introduction_container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            #header_text {
+                font-size: 2.5rem;
+            }
+
+            .introduction_text-content h2 {
+                font-size: 2rem;
+            }
+
+            .button {
+                width: 100%;
+            }
+        }
+
+        /* Обновим стили для блоков */
+        .info-block {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        /* Обновим стили для GST блока */
+        .info-block.GST {
+            height: 250px;  /* Немного уменьшим высоту */
+            overflow: hidden;
+            margin-top: 75px;  /* Добавим отступ сверху */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gst-content {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        /* Обновим стили для FAQ блока */
+        .info-block.FAQ {
+            height: auto;
+            min-height: 450px;  /* Немного увеличим минимальную высоту */
+            overflow: auto;
+            padding-top: 2rem;
+        }
+
+        .FAQ {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 2rem;
+        }
+
+        .FAQ h2 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .FAQ dt {
+            color: #0d6efd;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .FAQ dd {
+            color: #505c6c;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 3px solid #e9ecef;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -88,32 +393,34 @@
         </div>
 
         <div class="container">
-            <div class="row GST">
-                <section class="col-md-6">
-                    <h2>Start Shopping Today</h2>
-                    <p>Browse our latest gadgets and order your favorites now!</p>
-                </section>
-                <div class="col-md-6 d-flex align-items-center">
-                    <button onclick="handleShopNow()" class="button">View Catalog</button>
+            <div class="row">
+                <!-- FAQ секция -->
+                <div class="col-md-6">
+                    <div class="info-block FAQ">
+                        <h2>Frequently Asked Questions (FAQs)</h2>
+                        <dl>
+                            <dt>What products do you sell?</dt>
+                            <dd>We offer a wide range of gadgets, including smartphones, laptops, and accessories.</dd>
+                            <dt>Do you offer international shipping?</dt>
+                            <dd>Yes, we deliver worldwide with fast and secure shipping.</dd>
+                            <dt>What payment methods do you accept?</dt>
+                            <dd>We accept credit cards, PayPal, and other secure payment options.</dd>
+                            <dt>How can I track my order?</dt>
+                            <dd>Once your order is shipped, you'll receive a tracking number via email.</dd>
+                        </dl>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="container">
-            <div class="row FAQ">
-                <section class="col-md-12 text-center">
-                    <h2>Frequently Asked Questions (FAQs)</h2>
-                    <dl>
-                        <dt>What products do you sell?</dt>
-                        <dd>We offer a wide range of gadgets, including smartphones, laptops, and accessories.</dd>
-                        <dt>Do you offer international shipping?</dt>
-                        <dd>Yes, we deliver worldwide with fast and secure shipping.</dd>
-                        <dt>What payment methods do you accept?</dt>
-                        <dd>We accept credit cards, PayPal, and other secure payment options.</dd>
-                        <dt>How can I track my order?</dt>
-                        <dd>Once your order is shipped, you'll receive a tracking number via email.</dd>
-                    </dl>
-                </section>
+                <!-- Start Shopping Today секция -->
+                <div class="col-md-6">
+                    <div class="info-block GST">
+                        <div class="gst-content">
+                            <h2>Start Shopping Today</h2>
+                            <p>Browse our latest gadgets and order your favorites now!</p>
+                            <button onclick="handleShopNow()" class="button">View Catalog</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
