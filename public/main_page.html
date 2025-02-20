@@ -26,6 +26,7 @@
                 </div>
                 <div class="d-flex d-none" id="userInfo">
                     <span class="navbar-text me-3" id="userEmail"></span>
+                    <button class="btn btn-outline-light me-2" onclick="viewOrders()">Orders</button>
                     <button class="btn btn-outline-light" onclick="logout()">Logout</button>
                 </div>
             </div>
@@ -142,6 +143,9 @@
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             window.location.reload();
+        }
+        function viewOrders() {
+            window.location.href = '/ordersPage';
         }
     </script>
 </body>
