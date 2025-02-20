@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { isAdmin } = require('../middleware/authMiddleware');
 const Product = require('../models/Product');
+const Log = require('../models/Log');
+const Order = require('../models/Order');
+const Purchase = require('../models/Purchase');
 
 // Get all products with pagination
 router.get('/products', isAdmin, async (req, res) => {
@@ -73,6 +76,120 @@ router.delete('/products/:id', isAdmin, async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
     res.json({ message: 'Product deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Обновим route для аналитики
+router.get('/analytics', isAdmin, async (req, res) => {
+  try {
+    // Get purchases with user and product details
+    const purchases = await Purchase.aggregate([
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $unwind: '$user'
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'productId',
+          foreignField: '_id',
+          as: 'product'
+        }
+      },
+      {
+        $unwind: '$product'
+      },
+      {
+        $project: {
+          userEmail: '$user.email',
+          productName: '$product.name',
+          quantity: 1,
+          price: 1,
+          totalCost: { $multiply: ['$quantity', '$price'] },
+          timestamp: 1
+        }
+      },
+      {
+        $sort: { timestamp: -1 }
+      }
+    ]);
+
+    // Get most purchased products
+    const mostPurchased = await Purchase.aggregate([
+      {
+        $group: {
+          _id: '$productId',
+          totalQuantity: { $sum: '$quantity' },
+          totalRevenue: { $sum: { $multiply: ['$quantity', '$price'] } }
+        }
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'product'
+        }
+      },
+      {
+        $unwind: '$product'
+      },
+      {
+        $project: {
+          productName: '$product.name',
+          category: '$product.category',
+          totalQuantity: 1,
+          totalRevenue: 1
+        }
+      },
+      {
+        $sort: { totalQuantity: -1 }
+      },
+      {
+        $limit: 10
+      }
+    ]);
+
+    // Get user activity with user details
+    const userActivity = await Log.aggregate([
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $unwind: '$user'
+      },
+      {
+        $project: {
+          userEmail: '$user.email',
+          action: 1,
+          details: 1,
+          timestamp: 1
+        }
+      },
+      {
+        $sort: { timestamp: -1 }
+      }
+    ]);
+
+    res.json({
+      purchases,
+      mostPurchased,
+      userActivity
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

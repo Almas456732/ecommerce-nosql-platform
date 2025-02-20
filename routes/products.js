@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
+const { logActivity, LOG_TYPES } = require('../services/logService');
+const authenticateUser = require('../middleware/authenticateUser');
+const jwt = require('jsonwebtoken');
 
 // Get products with pagination and filtering
 router.get('/', async (req, res) => {
@@ -22,6 +25,9 @@ router.get('/', async (req, res) => {
     // Поиск по названию
     if (search) {
       query.name = { $regex: search, $options: 'i' };
+      if (req.user) {
+        await logActivity(req.user.id, LOG_TYPES.SEARCH, { query: search });
+      }
     }
     
     // Фильтр по цене
@@ -29,6 +35,12 @@ router.get('/', async (req, res) => {
       query.price = {};
       if (minPrice) query.price.$gte = parseFloat(minPrice);
       if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+      if (req.user) {
+        await logActivity(req.user.id, LOG_TYPES.FILTER, { 
+          category, 
+          priceRange: { min: minPrice, max: maxPrice } 
+        });
+      }
     }
 
     const skip = (page - 1) * limit;
@@ -61,6 +73,19 @@ router.get('/:id', async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
+    
+    // Log product view only if user is authenticated
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        await logActivity(decoded.id, 'VIEW_PRODUCT', { productId: product._id });
+      } catch (error) {
+        // Ignore token verification errors - just don't log the view
+        console.log('Token verification failed, skipping activity log');
+      }
+    }
+    
     res.json(product);
   } catch (err) {
     res.status(500).json({ message: err.message });

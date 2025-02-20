@@ -3,6 +3,8 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const { logActivity, LOG_TYPES } = require('../services/logService');
+const authenticateUser = require('../middleware/authenticateUser');
 
 router.post('/register', async (req, res) => {
   const { email, password } = req.body;
@@ -61,6 +63,8 @@ router.post('/login', async (req, res) => {
       { expiresIn: '1h' }
     );
     
+    await logActivity(user._id, LOG_TYPES.LOGIN, { email: user.email });
+
     res.json({ 
       token, 
       user: { 
@@ -75,6 +79,15 @@ router.post('/login', async (req, res) => {
       error: 'Server error',
       message: 'Login failed. Please try again.' 
     });
+  }
+});
+
+router.post('/logout', authenticateUser, async (req, res) => {
+  try {
+    await logActivity(req.user.id, LOG_TYPES.LOGOUT, {});
+    res.json({ message: 'Logged out successfully' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 

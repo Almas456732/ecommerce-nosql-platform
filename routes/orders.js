@@ -3,6 +3,8 @@ const router = express.Router();
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const authenticateUser = require('../middleware/authenticateUser');
+const { logActivity } = require('../services/logService');
+const Purchase = require('../models/Purchase');
 
 router.post('/', authenticateUser, async (req, res) => {
   const cart = req.body.cart;
@@ -42,6 +44,25 @@ router.post('/', authenticateUser, async (req, res) => {
       product.stock -= quantity;
       await product.save();
     }
+
+    // Записываем каждую покупку
+    for (const product of products) {
+      const quantity = cart[product._id];
+      const purchase = new Purchase({
+        userId: userId,
+        productId: product._id,
+        quantity: quantity,
+        price: product.price
+      });
+      await purchase.save();
+    }
+
+    // Log the purchase
+    await logActivity(userId, 'PURCHASE', {
+      orderId: order._id,
+      totalCost,
+      products: orderProducts
+    });
 
     res.json({ message: 'Purchase successful!', orderId: order._id });
   } catch (err) {
