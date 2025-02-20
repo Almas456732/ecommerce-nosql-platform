@@ -104,15 +104,16 @@
             }
 
             try {
-                const response = await fetch('/api/products/purchase', {
+                const token = localStorage.getItem('token'); // Извлечение токена из localStorage
+                const response = await fetch('/api/orders', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` // Передача токена в заголовке
                     },
                     body: JSON.stringify({ cart })
                 });
                 
-                console.log('Ответ от сервера:', response);
                 const result = await response.json();
                 console.log('Результат:', result);
                 if (response.ok) {
