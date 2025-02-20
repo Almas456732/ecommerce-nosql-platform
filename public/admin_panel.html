@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        .product-form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .products-list {
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .product-item {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 10px;
+        }
+        .pagination {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .pagination button {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            background: #fff;
+            cursor: pointer;
+        }
+        .pagination button.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .pagination button:disabled {
+            background: #eee;
+            cursor: not-allowed;
+        }
+        .products-info {
+            text-align: center;
+            margin: 10px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">E-Commerce</a>
+            <div class="navbar-text text-white">Admin Panel</div>
+            <button class="btn btn-outline-light" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="product-form">
+            <h3>Add/Edit Product</h3>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price</label>
+                    <input type="number" class="form-control" id="price" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="category" class="form-label">Category</label>
+                    <input type="text" class="form-control" id="category" required>
+                </div>
+                <div class="mb-3">
+                    <label for="stock" class="form-label">Stock</label>
+                    <input type="number" class="form-control" id="stock" required>
+                </div>
+                <div class="mb-3">
+                    <label for="imageURLs" class="form-label">Image URLs (comma-separated)</label>
+                    <input type="text" class="form-control" id="imageURLs">
+                </div>
+                <button type="submit" class="btn btn-primary">Save Product</button>
+                <button type="button" class="btn btn-secondary" onclick="resetForm()">Clear Form</button>
+            </form>
+        </div>
+
+        <div class="products-list">
+            <h3>Products List</h3>
+            <div class="products-info" id="productsInfo"></div>
+            <div id="productsList"></div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <script>
+        let isEditing = false;
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let totalPages = 1;
+
+        // Проверка авторизации при загрузке страницы
+        window.onload = function() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            
+            if (!token || user.role !== 'admin') {
+                window.location.href = '/loginPage';
+                return;
+            }
+            
+            loadProducts(1);
+        };
+
+        async function loadProducts(page) {
+            try {
+                const response = await fetch(`/api/admin/products?page=${page}&limit=${itemsPerPage}`, {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Failed to load products');
+                
+                const data = await response.json();
+                displayProducts(data.products);
+                updatePagination(data.currentPage, data.totalPages, data.totalProducts);
+                currentPage = data.currentPage;
+                totalPages = data.totalPages;
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to load products');
+            }
+        }
+
+        function displayProducts(products) {
+            const productsDiv = document.getElementById('productsList');
+            productsDiv.innerHTML = products.map(product => `
+                <div class="product-item">
+                    <h4>${product.name}</h4>
+                    <p>Price: $${product.price}</p>
+                    <p>Stock: ${product.stock}</p>
+                    <p>Category: ${product.category}</p>
+                    <button class="btn btn-warning btn-sm" onclick='editProduct(${JSON.stringify(product)})'>Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteProduct('${product._id}')">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function updatePagination(currentPage, totalPages, totalProducts) {
+            const paginationDiv = document.getElementById('pagination');
+            const infoDiv = document.getElementById('productsInfo');
+            
+            // Обновляем информацию о продуктах
+            infoDiv.innerHTML = `Showing page ${currentPage} of ${totalPages} (Total products: ${totalProducts})`;
+
+            // Создаем кнопки пагинации
+            let buttons = '';
+            
+            // Кнопка "Предыдущая"
+            buttons += `<button onclick="loadProducts(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>`;
+            
+            // Номера страниц
+            for (let i = 1; i <= totalPages; i++) {
+                buttons += `<button onclick="loadProducts(${i})" class="${currentPage === i ? 'active' : ''}">${i}</button>`;
+            }
+            
+            // Кнопка "Следующая"
+            buttons += `<button onclick="loadProducts(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>`;
+            
+            paginationDiv.innerHTML = buttons;
+        }
+
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const productData = {
+                name: document.getElementById('name').value,
+                price: Number(document.getElementById('price').value),
+                description: document.getElementById('description').value,
+                category: document.getElementById('category').value,
+                stock: Number(document.getElementById('stock').value),
+                imageURLs: document.getElementById('imageURLs').value.split(',').map(url => url.trim())
+            };
+
+            const productId = document.getElementById('productId').value;
+            const method = productId ? 'PUT' : 'POST';
+            const url = productId ? `/api/admin/products/${productId}` : '/api/admin/products';
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: JSON.stringify(productData)
+                });
+
+                if (!response.ok) throw new Error('Failed to save product');
+
+                alert(productId ? 'Product updated successfully' : 'Product added successfully');
+                resetForm();
+                loadProducts(currentPage);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to save product');
+            }
+        });
+
+        function editProduct(product) {
+            document.getElementById('productId').value = product._id;
+            document.getElementById('name').value = product.name;
+            document.getElementById('price').value = product.price;
+            document.getElementById('description').value = product.description;
+            document.getElementById('category').value = product.category;
+            document.getElementById('stock').value = product.stock;
+            document.getElementById('imageURLs').value = product.imageURLs.join(', ');
+        }
+
+        async function deleteProduct(productId) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+
+            try {
+                const response = await fetch(`/api/admin/products/${productId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to delete product');
+
+                alert('Product deleted successfully');
+                loadProducts(currentPage);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to delete product');
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('productForm').reset();
+            document.getElementById('productId').value = '';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/loginPage';
+        }
+    </script>
+</body>
+</html> 

@@ -13,17 +13,14 @@
             <div class="container signup-container">
                 <h2>Sign Up</h2>
                 <form id="signupForm">
-                    <label for="name">Name</label>
-                    <input type="text" id="username" name="username" required>
-                  
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" required>
                   
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" required>
                   
-                    <button onclick="register()">Sign Up</button>
-                  </form>
+                    <button type="submit">Sign Up</button>
+                </form>
                 <div class="home-link">
                     <p><a href="/">Go to Home</a></p>
                 </div>
@@ -38,29 +35,37 @@
             <p>Contact us:</p>
             <p>alan.selivanov.mail@gmail.com</p>
             <p>husainovalmas@gmail.com</p>
-          </div>
-      </footer>
-      <script>
-        async function register() {
-            const username = document.getElementById('username').value;
+        </div>
+    </footer>
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            const response = await fetch('/api/auth/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password }),
-            });
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
 
-            const data = await response.json();
-            if (response.ok) {
-                alert(data.message || 'Registration successful');
-                window.location.href = '/loginPage';
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Registration successful!');
+                    window.location.href = '/loginPage';
+                } else {
+                    alert(data.message || 'Registration failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Registration failed. Please try again.');
             }
-            else{
-                alert(data.message || 'Sign up failed');
-            }
-        }
-      </script>
-    </body>
+        });
+    </script>
+</body>
 </html>

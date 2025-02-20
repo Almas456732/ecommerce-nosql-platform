@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Catalog</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        .filters {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .product-card {
+            height: 100%;
+            transition: transform 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .product-image {
+            height: 200px;
+            object-fit: cover;
+        }
+        .pagination {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">E-Commerce</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/catalog">Catalog</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <span class="navbar-text me-3" id="userEmail"></span>
+                    <button class="btn btn-outline-light" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Фильтры -->
+            <div class="col-md-3">
+                <div class="filters">
+                    <h4>Filters</h4>
+                    <div class="mb-3">
+                        <label class="form-label">Search</label>
+                        <input type="text" class="form-control" id="searchInput">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="categorySelect">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Price Range</label>
+                        <div class="d-flex gap-2">
+                            <input type="number" class="form-control" id="minPrice" placeholder="Min">
+                            <input type="number" class="form-control" id="maxPrice" placeholder="Max">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary w-100" onclick="applyFilters()">Apply Filters</button>
+                </div>
+            </div>
+
+            <!-- Список продуктов -->
+            <div class="col-md-9">
+                <div class="row" id="productsList">
+                    <!-- Products will be inserted here -->
+                </div>
+                <div class="d-flex justify-content-center">
+                    <div class="pagination" id="pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let currentFilters = {};
+
+        // Проверка авторизации при загрузке страницы
+        window.onload = function() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            
+            if (!token) {
+                window.location.href = '/loginPage';
+                return;
+            }
+            
+            // Отображаем email пользователя
+            document.getElementById('userEmail').textContent = user.email;
+            
+            loadProducts();
+        };
+
+        async function loadProducts() {
+            try {
+                let url = `/api/products?page=${currentPage}`;
+                if (currentFilters.category) url += `&category=${currentFilters.category}`;
+                if (currentFilters.search) url += `&search=${currentFilters.search}`;
+                if (currentFilters.minPrice) url += `&minPrice=${currentFilters.minPrice}`;
+                if (currentFilters.maxPrice) url += `&maxPrice=${currentFilters.maxPrice}`;
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to load products');
+                
+                const data = await response.json();
+                displayProducts(data.products);
+                updatePagination(data.currentPage, data.totalPages);
+                updateCategories(data.categories);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to load products');
+            }
+        }
+
+        function displayProducts(products) {
+            const productsDiv = document.getElementById('productsList');
+            productsDiv.innerHTML = products.map(product => `
+                <div class="col-md-4 mb-4">
+                    <div class="card product-card">
+                        <img src="${product.imageURLs[0] || 'https://via.placeholder.com/200'}" 
+                             class="card-img-top product-image" 
+                             alt="${product.name}">
+                        <div class="card-body">
+                            <h5 class="card-title">${product.name}</h5>
+                            <p class="card-text">${product.description.substring(0, 100)}...</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0">$${product.price}</span>
+                                <span class="badge bg-secondary">${product.category}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateCategories(categories) {
+            const select = document.getElementById('categorySelect');
+            const currentCategory = select.value;
+            
+            select.innerHTML = '<option value="">All Categories</option>' +
+                categories.map(category => 
+                    `<option value="${category}" ${category === currentCategory ? 'selected' : ''}>${category}</option>`
+                ).join('');
+        }
+
+        function updatePagination(currentPage, totalPages) {
+            const paginationDiv = document.getElementById('pagination');
+            let buttons = '';
+            
+            // Кнопка "Предыдущая"
+            buttons += `<button class="btn btn-outline-primary mx-1" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>`;
+            
+            // Номера страниц
+            for (let i = 1; i <= totalPages; i++) {
+                buttons += `<button class="btn btn-outline-primary mx-1 ${currentPage === i ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+            
+            // Кнопка "Следующая"
+            buttons += `<button class="btn btn-outline-primary mx-1" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>`;
+            
+            paginationDiv.innerHTML = buttons;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            loadProducts();
+        }
+
+        function applyFilters() {
+            currentFilters = {
+                category: document.getElementById('categorySelect').value,
+                search: document.getElementById('searchInput').value,
+                minPrice: document.getElementById('minPrice').value,
+                maxPrice: document.getElementById('maxPrice').value
+            };
+            currentPage = 1;
+            loadProducts();
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/loginPage';
+        }
+    </script>
+</body>
+</html> 
