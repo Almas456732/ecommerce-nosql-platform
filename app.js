@@ -9,7 +9,7 @@ const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 
 const app = express();
-const PORT = 3000;
+const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
@@ -53,7 +53,7 @@ app.get('/ordersPage', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(port, () => {
   connectDB();
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${port}`);
 });
