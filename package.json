@@ -1,4 +1,11 @@
 {
+  "name": "ecommerce-project",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.4.7",
@@ -8,13 +15,6 @@
   },
   "engines": {
     "node": "18.x"
-  },
-  "name": "ecommerce-project",
-  "version": "1.0.0",
-  "main": "app.js",
-  "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
   }
 }
 
